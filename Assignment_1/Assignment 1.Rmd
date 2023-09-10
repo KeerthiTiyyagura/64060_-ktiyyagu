@@ -1,0 +1,48 @@
+---
+title: "Assignment 1"
+author: "keerthi Tiyyagura"
+date: "2023-09-10"
+output:
+  html_document: default
+  pdf_document: default
+---
+```{r}
+archive <-read.csv("C://Users//keert//Downloads//archive//Global Population Trends(2016-2022).csv") 
+#This line reads a CSV file located at a path named as "archive"
+
+View(archive)
+#It displays the "archive" data frame in the viewer to visually inspect the data set
+
+mean(archive$Year)
+#It calculates the average of the "year" column in "archive"
+
+sd(archive$Year)
+#It calculates the standard deviation of "Year" column in "archive"
+
+table(archive$Total.Population)
+#It creates a frequency table of unique values in "Total.Population" column
+
+str(archive$Life.Expectancy)
+#It displays the structure of "Life.Expectancy" column
+
+median(archive$Birth.Rate)
+#This calculates the median value of "Birth.Rate" column in "archive"
+
+summary(archive$Death.Rate)
+#This provides the summary statistics for "Death.Rate" column
+
+archive$Death.Rate_factor <- factor(archive$Death.Rate)
+#This line creates a new factor variable called "Death.Rate_factor" based on the values in "Death.Rate" column. It converts the numeric values in "Death.Rate" into a categorical factor variable.
+
+x <- c(archive$Year)
+#To create a vector "x" contains the values from the column "Year"
+
+y <- c(archive$Death.Rate_factor)
+#To create a vector "y" contains the values from the column "Death.Rate_factor"
+
+plot(x, y, xlab = "Year", ylab = "Death.Rate_factor", main = "scatterplot")
+#It creates a scatterplot with "Year" on x-axis and "Death.Rate_factor" on y-axis.It also sets labels for the x and y axes
+
+```
+
+
