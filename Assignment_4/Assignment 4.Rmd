@@ -1,0 +1,144 @@
+---
+title: "Assignment 4"
+author: "keerthi Tiyyagura"
+date: "2023-11-12"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+#Installing the required packages
+```{r}
+library(flexclust)#Calling installed libraries
+library(cluster)
+```
+```{r}
+library(tidyverse)
+library(factoextra) 
+```
+```{r}
+library(FactoMineR)
+library(ggcorrplot)
+```
+
+```{r}
+#Import the "Pharmaceuticals" dataset
+Pharmaceu <- read.csv("C:/Users/keert/Downloads/Pharmaceuticals.csv")
+summary(Pharmaceu)
+```
+1.Use only the numerical variables (1 to 9) to cluster the 21 firms.Justify the various choices made in conducting the cluster analysis, such as weights for different variables, the specific clustering algorithm(s) used, the number of clusters formed, and so on.
+```{r}
+Pharmac <- na.exclude(Pharmaceu)# It provides the data after removal of missing values.
+Pharmac
+```
+
+```{r}
+#To cluster the 21 firms,the quantitative variables(1-9) are required.
+row.names(Pharmac) <- Pharmac[,1]
+Pharma1 <- Pharmac[,3:11]
+head(Pharma1)
+```
+
+```{r}
+#Scale all dataframe's quantitative variables
+Pharma2 <- scale(Pharma1)
+head(Pharma2)
+```
+#Elbow method
+```{r}
+# Using Elbow method, calculate the no.of clusters to do the cluster analysis.
+fviz_nbclust(Pharma2,kmeans,method = "wss")+labs(subtitle = "Elbow Method")
+```
+
+```{r}
+# Using silhouette method to calculate no.of clusters
+fviz_nbclust(Pharma2, kmeans, method = "silhouette")+ labs(subtitle = "Silhouette Method")
+```
+
+```{r}
+# Also using the gap_stat method for calculating the no.of clusters
+fviz_nbclust(Pharma2, kmeans, method = "gap_stat")+ labs(subtitle = "gap_stat Method")
+```
+#In all the above plots,no.of clusters=5,which is sufficient to display the data variations.
+```{r}
+set.seed(10)
+k5<- kmeans(Pharma2,centers=5,nstart = 25)
+#Visualizing the output
+k5$centers# for centroids
+```
+
+```{r}
+fviz_cluster(k5,data = Pharma2) # to Visualize the clusters
+```
+
+```{r}
+k5$size
+```
+
+```{r}
+Distance<- dist(Pharma2, method = "euclidean")
+fviz_dist(Distance)
+```
+#To Fit the data with 5 clusters Using K-Means Cluster Analysis
+```{r}
+Fit<-kmeans(Pharma2,5)
+```
+#calculate the mean of all quantitative variables in each cluster
+```{r}
+aggregate(Pharma2,by=list(Fit$cluster),FUN=mean)
+```
+
+```{r}
+Pharma3<-data.frame(Pharma2,Fit$cluster)
+Pharma3
+```
+
+#view of the cluster plot
+```{r}
+clusplot(Pharma2,Fit$cluster,color = TRUE,shade = TRUE,labels = 2,lines = 0)
+```
+2.Interpret the clusters with respect to the numerical variables used in forming the clusters. Is there a pattern in the clusters with respect to the numerical variables (10 to 12)?
+
+Based on mean values:
+
+JNJ, MRK, PFE, and GSK comprise Cluster 1. The highest metrics in this cluster are Market_cap, ROA, ROE, and Asset_Turnover; the lowest are Beta and PE_Ratio.
+
+Cluster 2 - AHM, WPI, AVE ~Cluster 2 has the lowest PE Ratio, Asset Turnover, and the highest Rev_Growth.
+
+CHTT, ELN, MRX, and IVX make up Cluster 3; it has the lowest Market Cap, ROE, ROA, Leverage, Rev Growth, and Net Profit Margin, and the highest Beta and Leverage.
+
+BAY, PHA, and AGN make up Cluster 4, which has the lowest leverage and asset turnover ratios and the highest PE ratio.
+
+Cluster 5: AZN, ABT, NVS, BMY, WYE, SGP, LLY ~Cluster 5 has the lowest leverage, beta, and the highest Net Profit Margin. 
+```{r}
+clustdata <- Pharmac[12:14] %>% mutate(Clusters=k5$cluster) 
+ggplot(clustdata, mapping = aes(factor(Clusters), fill = Median_Recommendation))+geom_bar(position='dodge')+labs(x= 'Clusters')
+```
+
+```{r}
+ggplot(clustdata, mapping = aes(factor(Clusters),fill = Location))+geom_bar(position = 'dodge')+labs(x ='Clusters')
+```
+
+```{r}
+ggplot(clustdata, mapping = aes(factor(Clusters),fill = Exchange))+geom_bar(position = 'dodge')+labs(x ='Clusters')
+```
+The variable and clusters there is a trend in the median recommendations.
+There doesn’t seem to be any discernable pattern among the clusters, locations, or exchanges other than the fact that the majority of the clusters/companies are listed on the NYSE and situated in the United States
+
+3.Provide an appropriate name for each cluster using any or all of the variables in the dataset.
+
+Cluster 1: Top Buying 
+
+Cluster 2: Significant Risk 
+
+Cluster 3: Attempt it 
+
+Cluster 4: Very Dangerous or Runaway 
+
+Cluster 5: A Perfect Asset
+
+
+
+
+
+
